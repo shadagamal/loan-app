@@ -3,8 +3,8 @@ import pickle
 import pandas as pd
 
 # load model
-model = pickle.load(open("loan_model.pkl", "rb"))
-model_columns = pickle.load(open("model_columns.pkl", "rb"))
+model = joblib.load("loan_model.pkl")
+model_columns = joblib.load("model_columns.pkl")
 
 st.title("Loan Approval Prediction")
 
