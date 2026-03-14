@@ -1,17 +1,39 @@
 import streamlit as st
-import joblib
-import numpy as np
+import pickle
+import pandas as pd
 
 # load model
-model = joblib.load("model.pkl")
+model = pickle.load(open("loan_model.pkl", "rb"))
+model_columns = pickle.load(open("model_columns.pkl", "rb"))
 
-st.title("🏠 House Price Prediction")
+st.title("Loan Approval Prediction")
 
-size = st.number_input("House Size (m²)")
-bedrooms = st.number_input("Number of Bedrooms")
+age = st.number_input("Age")
+income = st.number_input("Income")
+credit_score = st.number_input("Credit Score")
 
-if st.button("Predict Price"):
-    
-    prediction = model.predict([[size, bedrooms]])
-    
-    st.success(f"Predicted Price: ${prediction[0]:,.2f}")
+gender = st.selectbox("Gender", ["Male","Female"])
+occupation = st.selectbox("Occupation", ["Engineer","Teacher","Student","Manager","Accountant"])
+education = st.selectbox("Education", ["High School","Bachelor's","Master's"])
+marital = st.selectbox("Marital Status", ["Single","Married"])
+
+if st.button("Predict"):
+
+    input_dict = {
+        "age":age,
+        "income":income,
+        "credit_score":credit_score
+    }
+
+    df = pd.DataFrame([input_dict])
+
+    df = pd.get_dummies(df)
+
+    df = df.reindex(columns=model_columns, fill_value=0)
+
+    prediction = model.predict(df)
+
+    if prediction[0] == 1:
+        st.success("Loan Approved")
+    else:
+        st.error("Loan Denied")
